@@ -1,6 +1,7 @@
 package org.example;
 
 import com.google.gson.annotations.SerializedName;
+import java.util.*;
 
 public class Practice {
     private String id;
@@ -11,6 +12,7 @@ public class Practice {
     @SerializedName("bday")
     private int bday;
 
+    private Date createdTime;
 
     public String getId() {
         return id;
@@ -34,5 +36,13 @@ public class Practice {
 
     public void setBday(int bday) {
         this.bday = bday;
+    }
+
+    public Date getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Date createdTime) {
+        this.createdTime = createdTime;
     }
 }

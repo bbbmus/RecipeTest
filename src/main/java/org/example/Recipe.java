@@ -1,11 +1,15 @@
 package org.example;
 
 import java.util.*;
-import org.example.IgdAmnt;
 
 public class Recipe {
+
     private String name;
     private String cuisine;
+    private String igredients;
+    private String instructions;
+    private Date createdTime;
+
     private Map<String, IgdAmnt> igdList;
     private Vector<String> instructList;
 
@@ -13,10 +17,16 @@ public class Recipe {
         this.igdList = new HashMap<>();
         this.instructList = new Vector<String>(0,1);
     }
+
     Recipe(String n, String c) {
         this();
         this.name = n;
         this.cuisine = c;
+    }
+
+    Recipe(Rec r) {
+        this();
+        airtableRec2Recipe(r);
     }
 
     public void addIngd(String igd, IgdAmnt iamount) {
@@ -32,7 +42,7 @@ public class Recipe {
      */
     public void listIgdAmount() {
         for(Map.Entry<String, IgdAmnt> it:this.igdList.entrySet()) {
-            System.out.println(it.getKey() + " " + it.getValue());
+            System.out.println(it.getKey() + " " + it.getValue().getAmount() + " " + it.getValue().getUnit());
         }
     }
 
@@ -61,6 +71,30 @@ public class Recipe {
         this.cuisine = cuisine;
     }
 
+    public String getIgredients() {
+        return igredients;
+    }
+
+    public void setIgredients(String igredients) {
+        this.igredients = igredients;
+    }
+
+    public String getInstructions() {
+        return instructions;
+    }
+
+    public void setInstructions(String instructions) {
+        this.instructions = instructions;
+    }
+
+    public Date getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(Date createdTime) {
+        this.createdTime = createdTime;
+    }
+
     public Map<String, IgdAmnt> getIgdList() {
         return igdList;
     }
@@ -75,5 +109,33 @@ public class Recipe {
 
     public void setInstructList(Vector<String> instructList) {
         this.instructList = instructList;
+    }
+
+    private void airtableRec2Recipe(Rec rec) {
+        this.setName(rec.getName());
+        this.setCuisine(rec.getCuisine());
+        this.airtableIngd2Ingd(rec.getIgredients());
+        this.airtableInst2Instruction(rec.getInstructions());
+    }
+
+    private void airtableIngd2Ingd(String igds) {
+        String[] igdsArray = igds.split("\n");
+        for(int i = 0; i < igdsArray.length; i++) {
+            String[] igd = igdsArray[i].split(",");
+            String[] amtUnit = igd[1].split("-");
+            this.addIngd(igd[0], new IgdAmnt(Double.parseDouble(amtUnit[0]), amtUnit[1]));
+        }
+
+        return ;
+    }
+
+    private void airtableInst2Instruction(String s) {
+        String[] steps = s.split("\n");
+        Vector<String> ret = new Vector<String>();
+        for(int i = 0; i < steps.length; i++) {
+            this.addInstruction(steps[i]);
+        }
+
+        return;
     }
 }
