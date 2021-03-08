@@ -21,16 +21,18 @@ public class RecipeManager
 
     public RecipeManager() {
         recipeSet = new HashSet<>();
+        airtableRecipe = new ArrayList<>();
     }
     public RecipeManager (AirtableManager am) {
         this();
         this.atManager = am;
     }
 
-    public void addRecipe(Recipe r){
+    public void addRecipe(Recipe r) throws AirtableException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+
+        pushToAirtable(r);
         this.recipeSet.add(r);
-        // TODO: creat a record in airtable
-        // pushToAirtable(r);
+        this.airtableRecipe.add(r.Recipe2Rec());
     }
 
     public void deleteRecipe(Recipe r) {
@@ -43,6 +45,14 @@ public class RecipeManager
 
     public void setRecipeSet(Set<Recipe> recipeSet) {
         this.recipeSet = recipeSet;
+    }
+
+    public List<Rec> getAirtableRecipe() {
+        return airtableRecipe;
+    }
+
+    public void setAirtableRecipe(List<Rec> airtableRecipe) {
+        this.airtableRecipe = airtableRecipe;
     }
 
     public void viewAllRecipes() {
@@ -61,8 +71,11 @@ public class RecipeManager
         r.listInstructions();
     }
 
-    private void pushToAirtable(Recipe r) throws InvocationTargetException, AirtableException, NoSuchMethodException, IllegalAccessException {
-//        atManager.getTable().create(r);
+    public void pushToAirtable(Recipe r) throws InvocationTargetException, AirtableException, NoSuchMethodException, IllegalAccessException {
+
+        // TODO: creat a record in airtable
+        String id = atManager.createARecipe(r.Recipe2Rec());
+         r.setAirtableID(id);
 
         //TODO:
         //check if recipe name is duplicated
@@ -70,10 +83,14 @@ public class RecipeManager
 
     public void updateLocalRecipeList() throws AirtableException, HttpResponseException {
         // refresh the recipe list shown on end user
-        this.airtableRecipe = atManager.getRecipeList();
-        for(int i = 0; i < this.airtableRecipe.size(); i++) {
-            this.addRecipe(new Recipe(airtableRecipe.get(i)));
+        if(airtableRecipe.isEmpty()) {
+            atManager.retrieveAllList();
+            this.airtableRecipe.addAll(atManager.getRecipeList());
+            for(int i = 0; i < this.airtableRecipe.size(); i++) {
+                this.recipeSet.add(new Recipe(airtableRecipe.get(i)));
+            }
         }
+
     }
 
     public void printRecipe(Recipe r) {

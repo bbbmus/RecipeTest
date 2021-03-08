@@ -2,11 +2,15 @@ package org.example;
 
 public class IgdAmnt {
     double amount;
-    String unit;
+    String unit = "";
 
     public IgdAmnt(double amnt, String u) {
         setAmount(amnt);
         setUnit(u);
+    }
+
+    public IgdAmnt(double amnt) {
+        setAmount(amnt);
     }
 
 

@@ -3,6 +3,8 @@ package org.example;
 import com.sybit.airtable.*;
 import com.sybit.airtable.exception.AirtableException;
 import org.apache.http.client.HttpResponseException;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class AirtableManager {
@@ -23,6 +25,7 @@ public class AirtableManager {
         this.baseName = baseName;
         this.tableName = tableName;
         airT = new Airtable();
+        recipeList = new ArrayList<>();
     }
 
     public void setupAirtable() throws AirtableException {
@@ -32,7 +35,8 @@ public class AirtableManager {
     }
 
     public void retrieveAllList() throws AirtableException, HttpResponseException {
-         this.recipeList = this.table.select();
+        this.recipeList.addAll(this.table.select());
+//         this.recipeList = this.table.select();
         return;
     }
 
@@ -41,11 +45,12 @@ public class AirtableManager {
     }
 
     public List<Rec> getRecipeList() throws AirtableException, HttpResponseException {
-        retrieveAllList();
         return recipeList;
     }
 
-    public void createRecipe() {
-
+    public String createARecipe(Rec r) throws InvocationTargetException, AirtableException, NoSuchMethodException, IllegalAccessException {
+        Rec ret = table.create(r);
+        recipeList.add(r);
+        return ret.getId();
     }
 }
