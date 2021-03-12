@@ -48,9 +48,72 @@ public class AirtableManager {
         return recipeList;
     }
 
-    public String createARecipe(Rec r) throws InvocationTargetException, AirtableException, NoSuchMethodException, IllegalAccessException {
+    public Rec createARecipe(Rec r) throws InvocationTargetException, AirtableException, NoSuchMethodException, IllegalAccessException {
         Rec ret = table.create(r);
-        recipeList.add(r);
-        return ret.getId();
+        recipeList.add(ret);
+        return ret;
     }
+
+    public List<Rec> searchRecipe(final String recipeName) throws AirtableException {
+        List<Rec> ret = this.table.select(new Query() {
+            @Override
+            public String[] getFields() {
+                return null;
+            }
+
+            @Override
+            public Integer getPageSize() {
+                return null;
+            }
+
+            @Override
+            public Integer getMaxRecords() {
+                return null;
+            }
+
+            @Override
+            public String getView() {
+                return null;
+            }
+
+            @Override
+            public List<Sort> getSort() {
+                return null;
+            }
+
+            @Override
+            public String filterByFormula() {
+                String s = "{name} = " + "'" + recipeName + "'";
+                return s;
+            }
+
+            @Override
+            public String getOffset() {
+                return null;
+            }
+        });
+        return ret;
+    }
+
+    public void deleteARecipe(Rec r) throws AirtableException {
+        List<Rec> l = searchRecipe(r.getName());
+
+        if(l.size() > 1) {
+            System.out.println( l.size() + " recipe with the name" + r.getName() + " cannot delete");
+            return;
+        }
+
+        if(l.isEmpty()) {
+            System.out.println("no such recipe exist");
+            return;
+        }
+
+        if(recipeList.contains(r)) {
+            recipeList.remove(r);
+            this.table.destroy(r.getId());
+        }
+
+        return;
+    }
+
 }

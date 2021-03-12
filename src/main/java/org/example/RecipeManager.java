@@ -20,7 +20,7 @@ public class RecipeManager
     private AirtableManager atManager;
 
     public RecipeManager() {
-        recipeSet = new HashSet<>();
+        recipeSet = new LinkedHashSet<>();
         airtableRecipe = new ArrayList<>();
     }
     public RecipeManager (AirtableManager am) {
@@ -32,11 +32,31 @@ public class RecipeManager
 
         pushToAirtable(r);
         this.recipeSet.add(r);
-        this.airtableRecipe.add(r.Recipe2Rec());
     }
 
-    public void deleteRecipe(Recipe r) {
+    public void deleteRecipe(Recipe r) throws AirtableException {
         this.recipeSet.remove(r);
+        atManager.deleteARecipe(r.getRec());
+    }
+
+    public void deleteRecipe(int idx) throws AirtableException {
+        if(idx >= recipeSet.size()) {
+            System.out.println("index out of bounds, only " + recipeSet.size() + " exist. this index does not exist!");
+            return;
+        }
+
+        if(idx == 0) {
+            System.out.println("zero is an invalid input. index starts from one.");
+        }
+
+        int cnt = 1;
+        Iterator<Recipe> it = recipeSet.iterator();
+        while(cnt < idx && it.hasNext()) {
+            it.next();
+            cnt++;
+        }
+
+        deleteRecipe((Recipe)it.next());
     }
 
     public Set<Recipe> getRecipeSet() {
@@ -57,8 +77,11 @@ public class RecipeManager
 
     public void viewAllRecipes() {
         Iterator it = recipeSet.iterator();
+        int cnt = 1;
         while(it.hasNext()) {
-            System.out.println(it.next());
+            Recipe r = (Recipe) it.next();
+            System.out.println(cnt + ". " + r.getName());
+            cnt++;
         }
     }
 
@@ -74,8 +97,10 @@ public class RecipeManager
     public void pushToAirtable(Recipe r) throws InvocationTargetException, AirtableException, NoSuchMethodException, IllegalAccessException {
 
         // TODO: creat a record in airtable
-        String id = atManager.createARecipe(r.Recipe2Rec());
-         r.setAirtableID(id);
+        Rec ret = atManager.createARecipe(r.getRec());
+        r.setAirtableID(ret.getId());
+        r.setRec(ret);
+
 
         //TODO:
         //check if recipe name is duplicated
@@ -83,11 +108,11 @@ public class RecipeManager
 
     public void updateLocalRecipeList() throws AirtableException, HttpResponseException {
         // refresh the recipe list shown on end user
-        if(airtableRecipe.isEmpty()) {
+        if(recipeSet.isEmpty()) {
             atManager.retrieveAllList();
-            this.airtableRecipe.addAll(atManager.getRecipeList());
-            for(int i = 0; i < this.airtableRecipe.size(); i++) {
-                this.recipeSet.add(new Recipe(airtableRecipe.get(i)));
+            List<Rec> tmp = atManager.getRecipeList();
+            for(int i = 0; i < tmp.size(); i++) {
+                this.recipeSet.add(new Recipe(tmp.get(i)));
             }
         }
 

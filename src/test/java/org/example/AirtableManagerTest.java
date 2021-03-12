@@ -18,7 +18,7 @@ public class AirtableManagerTest extends TestCase {
         am.setupAirtable();
 
         r1 = new Rec();
-        r1.setName("Chicken Enchilada");
+        r1.setName("Chicken Enchilada Test");
         r1.setCuisine("Mexican");
         r1.setIgredients("sour cream, 0.5-cup\nchicken broth, 1.5-cup");
         r1.setInstructions("1. boil the chicken broth\n2. add chicken breast into the boiled chicken broth and let it simmer until fullly cooked");
@@ -45,7 +45,16 @@ public class AirtableManagerTest extends TestCase {
     }
 
 
-    public void testCreateRecipe() throws AirtableException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    public void testCreateDeleteRecipe() throws AirtableException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, HttpResponseException {
         am.createARecipe(r1);
+        assertEquals(am.getRecipeList().size(), 1);
+        am.deleteARecipe(r1);
+        assertEquals(am.getRecipeList().size(), 0);
+    }
+
+    public void testSearchRecipe() throws AirtableException {
+        assertEquals(am.searchRecipe("sweet and sour soup").size(), 0);
+        assertEquals(am.searchRecipe("chicken ench").size(), 1);
+
     }
 }

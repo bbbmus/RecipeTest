@@ -16,9 +16,14 @@ public class Recipe {
     private Vector<String> instructList;
 
 
+
+    private Rec rec;
+
+
     Recipe() {
         this.igdList = new HashMap<>();
         this.instructList = new Vector<String>(0,1);
+        this.rec = new Rec();
         this.ingredients = "";
         this.instructions = "";
     }
@@ -31,6 +36,7 @@ public class Recipe {
 
     Recipe(Rec r) {
         this();
+        this.rec = r;
         airtableRec2Recipe(r);
     }
 
@@ -127,13 +133,22 @@ public class Recipe {
         this.airtableID = airtableID;
     }
 
-    public Rec Recipe2Rec() {
-        Rec rec = new Rec();
-        rec.setName(this.getName());
-        rec.setCuisine(this.getCuisine());
-        rec.setIgredients(ingredients);
-        rec.setInstructions(instructions);
+    public Rec getRec() {
+        if(this.rec.getName() == null) {
+            Recipe2Rec();
+        }
         return rec;
+    }
+
+    public void setRec(Rec r) {
+        this.rec = r;
+    }
+    private void Recipe2Rec() {
+        this.rec.setName(this.getName());
+        this.rec.setCuisine(this.getCuisine());
+        this.rec.setIgredients(ingredients);
+        this.rec.setInstructions(instructions);
+        return;
     }
     private void airtableRec2Recipe(Rec rec) {
         this.setAirtableID(rec.getId());

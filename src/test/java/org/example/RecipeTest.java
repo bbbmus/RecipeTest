@@ -98,7 +98,7 @@ public class RecipeTest extends TestCase {
     }
 
     public void testRecipe2Rec() {
-        Rec dandan = danDanNoodle.Recipe2Rec();
+        Rec dandan = danDanNoodle.getRec();
         assertEquals(dandan.getName(), danDanNoodleRec.getName());
         assertEquals(dandan.getInstructions(), danDanNoodleRec.getInstructions());
     }

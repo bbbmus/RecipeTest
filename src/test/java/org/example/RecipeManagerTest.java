@@ -8,7 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.reflect.InvocationTargetException;
-
+import java.util.*;
 
 public class RecipeManagerTest
 {
@@ -18,7 +18,7 @@ public class RecipeManagerTest
     RecipeManager rm;
     AirtableManager am;
     private Recipe r1;
-    String r1Title = "Chicken Enchilada3";
+    String r1Title = "Chicken Enchilada Test";
     @Before
     public void setUp() throws AirtableException {
         apiKey = "key8khS01fFZYRQSv";
@@ -75,7 +75,7 @@ public class RecipeManagerTest
     public void testPushToAirtable() throws AirtableException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, HttpResponseException {
         am.retrieveAllList();
         int before = am.getRecipeList().size();
-        am.createARecipe(r1.Recipe2Rec());
+        am.createARecipe(r1.getRec());
         am.retrieveAllList();
         int after = am.getRecipeList().size();
         assertEquals(1, after-before);
@@ -88,5 +88,34 @@ public class RecipeManagerTest
         rm.addRecipe(r1);
         rm.openRecipe(r1);
 
+    }
+
+    @Test
+    public void testDeleteRecipe() throws InvocationTargetException, AirtableException, NoSuchMethodException, IllegalAccessException, HttpResponseException {
+        rm.updateLocalRecipeList();
+        int beforenofRecipes = rm.getRecipeSet().size();
+        rm.addRecipe(r1);
+        List<Rec> tmp = am.searchRecipe(r1Title);
+        assertEquals(tmp.size(), 1);
+        assertEquals(rm.getRecipeSet().size()-beforenofRecipes, 1);
+        rm.deleteRecipe(r1);
+        assertEquals(rm.getRecipeSet().size(), beforenofRecipes);
+        tmp = am.searchRecipe(r1Title);
+        assertEquals(tmp.size(), 0);
+
+        tmp = am.searchRecipe("honey soysauce chicken");
+        assertEquals(tmp.size(), 1);
+        rm.deleteRecipe(14);
+        assertEquals(rm.getRecipeSet().size(), beforenofRecipes-1);
+        assertEquals(am.getRecipeList().size(), rm.getRecipeSet().size());
+        tmp = am.searchRecipe("honey soysauce chicken");
+        assertEquals(tmp.size(), 0);
+    }
+
+    @Test
+    public void testViewAllRecipes() throws AirtableException, HttpResponseException {
+        rm.updateLocalRecipeList();
+        System.out.println("numbers of recipes: " + rm.getRecipeSet().size());
+        rm.viewAllRecipes();
     }
 }
