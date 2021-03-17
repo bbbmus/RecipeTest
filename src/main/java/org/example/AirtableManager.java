@@ -37,7 +37,9 @@ public class AirtableManager implements PropertyChangeListener {
     }
 
     public void retrieveAllList() throws AirtableException, HttpResponseException {
-        this.recipeList.addAll(this.table.select());
+        if(recipeList.isEmpty()) {
+            this.recipeList.addAll(this.table.select());
+        }
 //         this.recipeList = this.table.select();
         return;
     }
@@ -51,9 +53,13 @@ public class AirtableManager implements PropertyChangeListener {
     }
 
     public Rec createARecipe(Rec r) throws InvocationTargetException, AirtableException, NoSuchMethodException, IllegalAccessException {
-        Rec ret = table.create(r);
-        recipeList.add(ret);
-        return ret;
+        if(!recipeList.contains(r)) {
+            Rec ret = table.create(r);
+            recipeList.add(ret);
+            return ret;
+        }
+
+        return null;
     }
 
     public List<Rec> searchRecipe(final String recipeName) throws AirtableException {
@@ -135,8 +141,11 @@ public class AirtableManager implements PropertyChangeListener {
 
             try {
                 Rec ret = createARecipe(changedRecipe.getRec());
-                changedRecipe.setAirtableID(ret.getId());
-                changedRecipe.setRec(ret);
+                if(ret != null) {
+                    changedRecipe.setAirtableID(ret.getId());
+                    changedRecipe.setRec(ret);
+                }
+
             } catch (InvocationTargetException e) {
                 e.printStackTrace();
             } catch (AirtableException e) {

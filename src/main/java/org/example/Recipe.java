@@ -42,6 +42,7 @@ public class Recipe {
 
     public void addIngd(String igd, IgdAmnt iamount) {
 
+        // TODO: ingredient unit should me enum
         igdList.put(igd, iamount);
         ingredients = ingredients + igd + "," + iamount.getAmount() + "-" + iamount.getUnit() + "\n";
     }

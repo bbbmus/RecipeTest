@@ -20,7 +20,7 @@ public class RecipeManager
     // observable of the observer pattern
     private PropertyChangeSupport pcs;
 
-    protected Set<Recipe> recipeSet;
+    private Set<Recipe> recipeSet;
     private AirtableManager atManager;
     private Recipe deletedRecipe;
     private Recipe addedRecipe;
@@ -54,14 +54,14 @@ public class RecipeManager
 
     public void deleteRecipe(Recipe r) throws AirtableException {
         // NOTE: common to all manager, can be extracted to be parent in the future
-        deletedRecipe = r.clone();
+        deletedRecipe = r;
         this.recipeSet.remove(r);
         pcs.firePropertyChange("deletedRecipe", null, deletedRecipe);
         deletedRecipe = null;
     }
 
     public void deleteRecipe(int idx) throws AirtableException {
-        if(idx >= recipeSet.size()) {
+        if(idx > recipeSet.size()) {
             System.out.println("index out of bounds, only " + recipeSet.size() + " exist. this index does not exist!");
             return;
         }
@@ -122,11 +122,12 @@ public class RecipeManager
 
     public void updateLocalRecipeList(AirtableManager am) throws AirtableException, HttpResponseException {
         // refresh the recipe list shown on end user
+        // NOTE: can be extracted to the parent class
         if(recipeSet.isEmpty()) {
             am.retrieveAllList();
             List<Rec> tmp = am.getRecipeList();
             for(int i = 0; i < tmp.size(); i++) {
-                this.recipeSet.add(new Recipe(tmp.get(i)));
+                addRecipe(new Recipe(tmp.get(i)));
             }
         }
 
