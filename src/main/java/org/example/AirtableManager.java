@@ -4,10 +4,12 @@ import com.sybit.airtable.*;
 import com.sybit.airtable.exception.AirtableException;
 import org.apache.http.client.HttpResponseException;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
-public class AirtableManager {
+public class AirtableManager implements PropertyChangeListener {
     private String apiKey = "key8khS01fFZYRQSv";
     private String baseName = "appL7E4fvJvvYvyb3";
     private String tableName;
@@ -116,4 +118,36 @@ public class AirtableManager {
         return;
     }
 
+    // observer of the observer pattern
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+
+        Recipe changedRecipe = (Recipe) evt.getNewValue();
+        if(evt.getPropertyName() == "deletedRecipe") {
+            // a recipe is deleted
+            try {
+                deleteARecipe(changedRecipe.getRec());
+            } catch (AirtableException e) {
+                e.printStackTrace();
+            }
+        }else if(evt.getPropertyName() == "addedRecipe") {
+            // a recipe is added
+
+            try {
+                Rec ret = createARecipe(changedRecipe.getRec());
+                changedRecipe.setAirtableID(ret.getId());
+                changedRecipe.setRec(ret);
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (AirtableException e) {
+                e.printStackTrace();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+    }
 }

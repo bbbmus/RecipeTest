@@ -10,33 +10,54 @@ import com.sybit.airtable.*;
 import com.sybit.airtable.exception.AirtableException;
 import org.apache.http.client.HttpResponseException;
 
+import java.beans.PropertyChangeListener;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.beans.PropertyChangeSupport;
 
 public class RecipeManager
 {
-    private List<Rec> airtableRecipe;
-    private Set<Recipe> recipeSet;
+    // observable of the observer pattern
+    private PropertyChangeSupport pcs;
+
+    protected Set<Recipe> recipeSet;
     private AirtableManager atManager;
+    private Recipe deletedRecipe;
+    private Recipe addedRecipe;
+
 
     public RecipeManager() {
+        pcs = new PropertyChangeSupport(this);
         recipeSet = new LinkedHashSet<>();
-        airtableRecipe = new ArrayList<>();
     }
+
+    public void addListener(PropertyChangeListener listener) {
+        pcs.addPropertyChangeListener(listener);
+    }
+
+    public void removeListener(PropertyChangeListener listener) {
+        pcs.removePropertyChangeListener(listener);
+    }
+
     public RecipeManager (AirtableManager am) {
         this();
         this.atManager = am;
     }
 
-    public void addRecipe(Recipe r) throws AirtableException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-
-        pushToAirtable(r);
+    public void addRecipe(Recipe r){
+        // NOTE: common to all manager, can be extracted to be parent in the future
         this.recipeSet.add(r);
+        this.addedRecipe = r;
+        pcs.firePropertyChange("addedRecipe", null, addedRecipe);
+        this.addedRecipe = null;
     }
 
     public void deleteRecipe(Recipe r) throws AirtableException {
+        // NOTE: common to all manager, can be extracted to be parent in the future
+        deletedRecipe = r.clone();
         this.recipeSet.remove(r);
-        atManager.deleteARecipe(r.getRec());
+        pcs.firePropertyChange("deletedRecipe", null, deletedRecipe);
+        deletedRecipe = null;
     }
 
     public void deleteRecipe(int idx) throws AirtableException {
@@ -67,15 +88,8 @@ public class RecipeManager
         this.recipeSet = recipeSet;
     }
 
-    public List<Rec> getAirtableRecipe() {
-        return airtableRecipe;
-    }
-
-    public void setAirtableRecipe(List<Rec> airtableRecipe) {
-        this.airtableRecipe = airtableRecipe;
-    }
-
     public void viewAllRecipes() {
+        // NOTE: common to all manager, can be extracted to be parent in the future
         Iterator it = recipeSet.iterator();
         int cnt = 1;
         while(it.hasNext()) {
@@ -106,11 +120,11 @@ public class RecipeManager
         //check if recipe name is duplicated
     }
 
-    public void updateLocalRecipeList() throws AirtableException, HttpResponseException {
+    public void updateLocalRecipeList(AirtableManager am) throws AirtableException, HttpResponseException {
         // refresh the recipe list shown on end user
         if(recipeSet.isEmpty()) {
-            atManager.retrieveAllList();
-            List<Rec> tmp = atManager.getRecipeList();
+            am.retrieveAllList();
+            List<Rec> tmp = am.getRecipeList();
             for(int i = 0; i < tmp.size(); i++) {
                 this.recipeSet.add(new Recipe(tmp.get(i)));
             }

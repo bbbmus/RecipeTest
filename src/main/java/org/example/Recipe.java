@@ -75,6 +75,7 @@ public class Recipe {
 
     public void setName(String name) {
         this.name = name;
+        this.rec.setName(name);
     }
 
     public String getCuisine() {
@@ -133,6 +134,20 @@ public class Recipe {
         this.airtableID = airtableID;
     }
 
+    public Recipe clone() {
+        Recipe clone = new Recipe();
+        clone.setRec(this.getRec());
+        clone.setAirtableID(this.getAirtableID());
+        clone.setCuisine(this.getCuisine());
+        clone.setName(this.getName());
+        clone.setInstructions(this.getInstructions());
+        clone.setInstructList(this.getInstructList());
+        clone.setIgdList(this.getIgdList());
+        clone.setIngredients(this.getIngredients());
+        clone.setCreatedTime(this.getCreatedTime());
+
+        return clone;
+    }
     public Rec getRec() {
         if(this.rec.getName() == null) {
             Recipe2Rec();

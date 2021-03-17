@@ -11,14 +11,19 @@ public class AirtableManagerTest extends TestCase {
     private static String baseName = "appL7E4fvJvvYvyb3";
     private static String tableName = "Recipe";
     private AirtableManager am;
+    private RecipeManager rm;
     private Rec r1;
     public void setUp() throws Exception {
         am = new AirtableManager(apiKey, baseName, tableName);
 //        am = new AirtableManager(apiKey, baseName, "Practice");
         am.setupAirtable();
 
+        rm = new RecipeManager();
+        rm.addListener(am);
+        rm.updateLocalRecipeList(am);
+
         r1 = new Rec();
-        r1.setName("Chicken Enchilada Test");
+        r1.setName("Chicken Enchilada 0315");
         r1.setCuisine("Mexican");
         r1.setIgredients("sour cream, 0.5-cup\nchicken broth, 1.5-cup");
         r1.setInstructions("1. boil the chicken broth\n2. add chicken breast into the boiled chicken broth and let it simmer until fullly cooked");
