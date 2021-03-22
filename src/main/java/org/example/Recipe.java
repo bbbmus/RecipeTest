@@ -66,7 +66,7 @@ public class Recipe {
         }
     }
     public void addInstruction(String step) {
-        instructList.add(step);
+        instructList.add((instructList.size()+1) + ". " + step);
         instructions = instructions + instructList.size() + ". " + step + "\n";
     }
 
@@ -166,6 +166,7 @@ public class Recipe {
         this.rec.setInstructions(instructions);
         return;
     }
+
     private void airtableRec2Recipe(Rec rec) {
         this.setAirtableID(rec.getId());
         this.setName(rec.getName());
@@ -193,7 +194,7 @@ public class Recipe {
         String[] steps = s.split("\n");
         Vector<String> ret = new Vector<String>();
         for(int i = 0; i < steps.length; i++) {
-            this.addInstruction(steps[i]);
+            this.instructList.add(steps[i]);
         }
 
         return;

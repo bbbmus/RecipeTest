@@ -5,6 +5,7 @@ import junit.framework.TestCase;
 import org.apache.http.client.HttpResponseException;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
 
 public class AirtableManagerTest extends TestCase {
     private static String apiKey = "key8khS01fFZYRQSv";
@@ -13,53 +14,52 @@ public class AirtableManagerTest extends TestCase {
     private AirtableManager am;
     private RecipeManager rm;
     private Rec r1;
+    private Date d;
     public void setUp() throws Exception {
-        am = new AirtableManager(apiKey, baseName, tableName);
-//        am = new AirtableManager(apiKey, baseName, "Practice");
-        am.setupAirtable();
+        am = RecipeTest.setUpAirtable();
+
+        d = new Date();
 
         rm = new RecipeManager();
         rm.addListener(am);
         rm.updateLocalRecipeList(am);
 
         r1 = new Rec();
-        r1.setName("Chicken Enchilada 0315");
+        r1.setName("Chicken Enchilada" + d.getTime());
         r1.setCuisine("Mexican");
         r1.setIgredients("sour cream, 0.5-cup\nchicken broth, 1.5-cup");
         r1.setInstructions("1. boil the chicken broth\n2. add chicken breast into the boiled chicken broth and let it simmer until fullly cooked");
         super.setUp();
     }
 
-    public void testGetTable() {
-    }
-
-    public void testSetupAirtable() throws AirtableException {
-
-    }
 
     public void testRetrieveAllList() throws AirtableException, HttpResponseException {
-        assertEquals(0, am.getRecipeList().size());
-        am.retrieveAllList();
-        assertEquals(am.getRecipeList().size(), 6);
-        for(int i = 0; i < am.getRecipeList().size(); i++) {
-            System.out.println(am.getRecipeList().get(i).getName());
+        AirtableManager amLocal = new AirtableManager(apiKey, baseName, tableName);
+        amLocal.setupAirtable();
+        amLocal.retrieveAllList();
+        assertEquals(amLocal.getRecipeList().size(), am.getRecipeList().size());
+        for(int i = 0; i < amLocal.getRecipeList().size(); i++) {
+            assertEquals(amLocal.getRecipeList().get(i).getName(), am.getRecipeList().get(i).getName());
         }
-
-        assertEquals(am.getRecipeList().get(0).getName(), "chicken ench");
-//        assertEquals(am.getRecipeList().get(5).getName(), "egg tortilla");
     }
 
 
     public void testCreateDeleteRecipe() throws AirtableException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, HttpResponseException {
-        am.createARecipe(r1);
-        assertEquals(am.getRecipeList().size(), 1);
-        am.deleteARecipe(r1);
-        assertEquals(am.getRecipeList().size(), 0);
+        int preSize = am.getRecipeList().size();
+        Recipe R1 = new Recipe(r1);
+        rm.addRecipe(R1);
+        assertEquals(am.getRecipeList().size(), preSize+1);
+        rm.deleteRecipe(R1);
+        assertEquals(am.getRecipeList().size(), preSize);
     }
 
     public void testSearchRecipe() throws AirtableException {
-        assertEquals(am.searchRecipe("sweet and sour soup").size(), 0);
-        assertEquals(am.searchRecipe("chicken ench").size(), 1);
+        assertEquals(am.searchRecipe("sweet and sour soup" + d.getTime()).size(), 0);
+
+        Recipe R1 = new Recipe(r1);
+        rm.addRecipe(R1);
+        assertEquals(am.searchRecipe(R1.getName()).size(), 1);
+        rm.deleteRecipe(R1);
 
     }
 }

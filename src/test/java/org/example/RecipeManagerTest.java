@@ -18,13 +18,11 @@ public class RecipeManagerTest
     RecipeManager rm;
     AirtableManager am;
     private Recipe r1;
-    String r1Title = "Chicken ench 0315";
-    @Before
-    public void setUp() throws AirtableException {
-        apiKey = "key8khS01fFZYRQSv";
-        baseName = "appL7E4fvJvvYvyb3";
-        tableName = "Recipe";
+    private Date d;
+    String r1Title;
 
+    public void setUpR1() {
+        r1Title = "Chicken ench" + d.getTime();
         r1 = new Recipe(r1Title, "Mexican");
         r1.addIngd("sour cream", new IgdAmnt(0.5, "cup"));
         r1.addIngd("chicken broth",new IgdAmnt(1.5, "cup"));
@@ -32,15 +30,19 @@ public class RecipeManagerTest
         r1.addInstruction("add chicken breast into the boiled chicken broth and let it simmer until fullly cooked");
         r1.addInstruction("take the chicken breast out, let it cool, then shred the chicken breast");
 
-        am = new AirtableManager(apiKey, baseName, tableName);
-        am.setupAirtable();
+    }
+    @Before
+    public void setUp() throws AirtableException {
+        this.am = RecipeTest.setUpAirtable();
+
+        d = new Date();
+        setUpR1();
 
         rm = new RecipeManager();
         rm.addListener(am);
     }
-    /**
-     * Rigorous Test :-)
-     */
+
+
     @Test
     public void testUpdateLocalRecipeList() throws AirtableException, HttpResponseException {
         int beforeSize = rm.getRecipeSet().size();
@@ -59,7 +61,8 @@ public class RecipeManagerTest
         int ogSize = rm.getRecipeSet().size();
 
         System.out.println("recipe set size: " + rm.getRecipeSet().size());
-        Recipe r2 = new Recipe("honey soysauce chicken 0315", "taiwanese");
+
+        Recipe r2 = new Recipe("honey soysauce chicken" + d.getTime(), "taiwanese");
         r2.addIngd("chicken thigh", new IgdAmnt(1, "lb"));
         r2.addIngd("ginger", new IgdAmnt(4, "oz"));
         r2.addIngd("garlic", new IgdAmnt(2, "cloves"));
@@ -71,25 +74,11 @@ public class RecipeManagerTest
         rm.addRecipe(r2);
         assertEquals(rm.getRecipeSet().size(), ogSize+1);
         assertEquals(am.getRecipeList().size(), ogSize+1);
-        assertEquals(am.searchRecipe("honey soysauce chicken 0315").size(), 1);
+        assertEquals(am.searchRecipe("honey soysauce chicken" + d.getTime()).size(), 1);
 
-        rm.addRecipe(new Recipe("chicken jerky", "dog treats"));
-        rm.addRecipe(new Recipe("cheese cake", "american desert"));
-
-
-
+        rm.deleteRecipe(r2);
     }
 
-    @Test
-    public void testPushToAirtable() throws AirtableException, IllegalAccessException, NoSuchMethodException, InvocationTargetException, HttpResponseException {
-        am.retrieveAllList();
-        int before = am.getRecipeList().size();
-        am.createARecipe(r1.getRec());
-        am.retrieveAllList();
-        int after = am.getRecipeList().size();
-        assertEquals(1, after-before);
-
-    }
 
     @Test
     public void testOpenRecipe() throws AirtableException, HttpResponseException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
@@ -109,18 +98,9 @@ public class RecipeManagerTest
         assertEquals(rm.getRecipeSet().size()-beforenofRecipes, 1);
 
         rm.deleteRecipe(r1);
-        assertEquals(rm.getRecipeSet().size(), beforenofRecipes+1);
+        assertEquals(rm.getRecipeSet().size(), beforenofRecipes);
         tmp = am.searchRecipe(r1Title);
         assertEquals(tmp.size(), 0);
-
-//        rm.deleteRecipe();
-//        tmp = am.searchRecipe("honey soysauce chicken 0315");
-//        assertEquals(tmp.size(), 1);
-//        rm.deleteRecipe(14);
-//        assertEquals(rm.getRecipeSet().size(), beforenofRecipes-1);
-//        assertEquals(am.getRecipeList().size(), rm.getRecipeSet().size());
-//        tmp = am.searchRecipe("honey soysauce chicken");
-//        assertEquals(tmp.size(), 0);
     }
 
     @Test
