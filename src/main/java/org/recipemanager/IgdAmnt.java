@@ -1,4 +1,4 @@
-package org.example;
+package org.recipemanager;
 
 public class IgdAmnt {
     double amount;

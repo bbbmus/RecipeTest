@@ -1,4 +1,4 @@
-package org.example;
+package org.recipemanager;
 
 import com.google.gson.annotations.SerializedName;
 

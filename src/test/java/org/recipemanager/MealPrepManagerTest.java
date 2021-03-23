@@ -1,4 +1,4 @@
-package org.example;
+package org.recipemanager;
 
 import com.sybit.airtable.exception.AirtableException;
 import junit.framework.TestCase;

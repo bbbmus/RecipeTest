@@ -1,11 +1,7 @@
-package org.example;
-
-import com.sybit.airtable.exception.AirtableException;
-import org.apache.http.client.HttpResponseException;
+package org.recipemanager;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class MealPrepManager implements PropertyChangeListener {

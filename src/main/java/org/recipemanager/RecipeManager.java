@@ -1,17 +1,14 @@
-package org.example;
+package org.recipemanager;
 
 /**
  * Hello world!
  *
  */
 
-import com.mashape.unirest.request.GetRequest;
-import com.sybit.airtable.*;
 import com.sybit.airtable.exception.AirtableException;
 import org.apache.http.client.HttpResponseException;
 
 import java.beans.PropertyChangeListener;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.beans.PropertyChangeSupport;
 
