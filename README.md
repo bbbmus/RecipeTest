@@ -8,7 +8,8 @@ Search for recipes by the ingredients currently available to the users
 Genereate shopping list based on the meal plans
 
 ## Future Feature:
-keep inventory on pantry items by scanning the barcode
+Keep inventory on pantry items by scanning the barcode
+
 
 ## Dependency-Maven
 ```
