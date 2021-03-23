@@ -5,11 +5,13 @@ This project creates an application that keeps all the recipes in one place and 
 
 ## Feature: 
 Search for recipes by the ingredients currently available to the users
+
 Genereate shopping list based on the meal plans
 
 ## Future Feature:
 Keep inventory on pantry items by scanning the barcode
 
+plug-ins to convert different types of recipe format
 
 ## Dependency-Maven
 ```
