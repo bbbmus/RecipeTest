@@ -52,7 +52,7 @@ public class AirtableManager implements PropertyChangeListener {
         return recipeList;
     }
 
-    public Rec createARecipe(Rec r) throws InvocationTargetException, AirtableException, NoSuchMethodException, IllegalAccessException {
+    private Rec createARecipe(Rec r) throws InvocationTargetException, AirtableException, NoSuchMethodException, IllegalAccessException {
         if(!recipeList.contains(r)) {
             Rec ret = table.create(r);
             recipeList.add(ret);
@@ -103,11 +103,11 @@ public class AirtableManager implements PropertyChangeListener {
         return ret;
     }
 
-    public void deleteARecipe(Rec r) throws AirtableException {
+    private void deleteARecipe(Rec r) throws AirtableException {
         List<Rec> l = searchRecipe(r.getName());
 
         if(l.size() > 1) {
-            System.out.println( l.size() + " recipe with the name" + r.getName() + " cannot delete");
+            System.out.println( "There are " + l.size() + " recipe with the name " + r.getName() + " cannot delete");
             return;
         }
 

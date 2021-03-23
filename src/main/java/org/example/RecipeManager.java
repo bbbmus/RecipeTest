@@ -50,6 +50,8 @@ public class RecipeManager
         this.addedRecipe = r;
         pcs.firePropertyChange("addedRecipe", null, addedRecipe);
         this.addedRecipe = null;
+        //TODO:
+        //check if recipe name is duplicated
     }
 
     public void deleteRecipe(Recipe r) throws AirtableException {
@@ -106,18 +108,6 @@ public class RecipeManager
         r.listIgdAmount();
         System.out.println("Cooking Instructions: \n");
         r.listInstructions();
-    }
-
-    public void pushToAirtable(Recipe r) throws InvocationTargetException, AirtableException, NoSuchMethodException, IllegalAccessException {
-
-        // TODO: creat a record in airtable
-        Rec ret = atManager.createARecipe(r.getRec());
-        r.setAirtableID(ret.getId());
-        r.setRec(ret);
-
-
-        //TODO:
-        //check if recipe name is duplicated
     }
 
     public void updateLocalRecipeList(AirtableManager am) throws AirtableException, HttpResponseException {
