@@ -1,16 +1,16 @@
  
 
-#Motivation: 
+# Motivation: 
 This project creates an application that keeps all the recipes in one place and has the ability to meal plan and meal prep efficientlty
 
-#Feature: 
+# Feature: 
 ## Search for recipes by the ingredients currently available to the users
 ##Genereate shopping list based on the meal plans
 
-#Future Feature:
+# Future Feature:
 ## keep inventory on pantry items by scanning the barcode
 
-#Dependency-Maven
+# Dependency-Maven
 ```
 <dependency>
   <groupId>com.sybit</groupId>
